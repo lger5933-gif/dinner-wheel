@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="今晚吃啥？把想吃的放进小转盘，让今晚的晚餐快速有答案。" />
+    <meta name="theme-color" content="#151517" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="今晚吃啥" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>今晚吃啥 · 晚餐小转盘</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/app-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("dinner-wheel-theme");
+          const preferred = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+          document.documentElement.dataset.theme = saved || preferred;
+        } catch {}
+      })();
+    </script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <div class="noise" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="今晚吃啥首页">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="brand-steam"></span>
+            <span class="brand-bowl">🥢</span>
+          </span>
+          <span class="brand-copy">
+            <strong>今晚吃啥</strong>
+            <small>DINNER, DECIDED.</small>
+          </span>
+        </a>
+
+        <div class="header-actions">
+          <button class="quiet-button install-button" id="installButton" type="button" hidden>
+            <span aria-hidden="true">↗</span>
+            安装
+          </button>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="切换为浅色模式">
+            <span class="theme-icon" aria-hidden="true">☾</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <div class="hero-copy">
+          <div class="hero-topline">
+            <p class="eyebrow">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="greeting">晚上好</span>
+              <span class="eyebrow-separator" aria-hidden="true"></span>
+              <time id="todayDate"></time>
+            </p>
+            <span class="hero-edition" aria-hidden="true"><small>NO.</small> 01</span>
+          </div>
+
+          <div class="headline-stage">
+            <span class="headline-halo" aria-hidden="true"></span>
+            <span class="headline-spark headline-spark-one" aria-hidden="true">✦</span>
+            <span class="headline-spark headline-spark-two" aria-hidden="true">✧</span>
+            <h1>
+              <span class="title-line title-line-top">别再<span class="title-accent">纠结</span>，</span>
+              <span class="title-line title-line-bottom">
+                <span class="title-plain">让转盘</span>
+                <span class="title-pick">替你决定<span>。</span></span>
+              </span>
+            </h1>
+            <span class="headline-note" aria-hidden="true"><span></span>交给运气</span>
+          </div>
+
+          <div class="hero-lede">
+            <span class="lede-mark" aria-hidden="true">✦</span>
+            <p>
+              <span class="lede-label">今晚的小规则</span>
+              把想吃的都放进转盘，<strong>轻轻一转就有答案。</strong>
+            </p>
+            <span class="lede-arrow" aria-hidden="true">↘</span>
+          </div>
+
+          <div class="hero-meta">
+            <span class="meta-card">
+              <strong id="candidateCount">8</strong>
+              <span>个候选<br />等你翻牌</span>
+            </span>
+            <span class="meta-card">
+              <i aria-hidden="true">✦</i>
+              <span><b>随机一点</b><br />快乐就会多一点</span>
+            </span>
+          </div>
+        </div>
+
+        <section class="wheel-card" aria-labelledby="wheelHeading">
+          <div class="wheel-card-head">
+            <div>
+              <p class="micro-label">LUCKY MENU</p>
+              <h2 id="wheelHeading">今晚的味觉盲盒</h2>
+            </div>
+            <span class="live-chip"><span aria-hidden="true"></span> LIVE</span>
+          </div>
+
+          <div class="wheel-stage">
+            <div class="wheel-orbit orbit-a" aria-hidden="true"></div>
+            <div class="wheel-orbit orbit-b" aria-hidden="true"></div>
+            <div class="wheel-spark spark-a" aria-hidden="true">✦</div>
+            <div class="wheel-spark spark-b" aria-hidden="true">✧</div>
+            <div class="wheel-spark spark-c" aria-hidden="true">✦</div>
+
+            <div class="pointer" aria-hidden="true">
+              <span class="pointer-gem"></span>
+              <span class="pointer-tip"></span>
+            </div>
+
+            <div class="wheel-wrap">
+              <svg
+                id="dinnerWheel"
+                class="dinner-wheel"
+                viewBox="0 0 520 520"
+                role="img"
+                aria-labelledby="wheelTitle wheelDesc"
+              >
+                <title id="wheelTitle">今晚吃什么转盘</title>
+                <desc id="wheelDesc">转盘上会显示你添加的晚餐候选。</desc>
+                <defs>
+                  <filter id="wheelShadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="17" stdDeviation="18" flood-opacity=".3" />
+                  </filter>
+                  <radialGradient id="hubGradient" cx="35%" cy="25%" r="85%">
+                    <stop offset="0" stop-color="var(--hub-light)" />
+                    <stop offset=".7" stop-color="var(--hub-mid)" />
+                    <stop offset="1" stop-color="var(--hub-dark)" />
+                  </radialGradient>
+                  <linearGradient id="rimGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="var(--rim-light)" />
+                    <stop offset=".55" stop-color="var(--rim-mid)" />
+                    <stop offset="1" stop-color="var(--rim-dark)" />
+                  </linearGradient>
+                </defs>
+                <circle class="wheel-shadow-disc" cx="260" cy="274" r="244" />
+                <circle class="wheel-rim" cx="260" cy="260" r="247" />
+                <g id="wheelRotor" class="wheel-rotor"></g>
+                <circle class="wheel-ring" cx="260" cy="260" r="113" />
+                <circle class="wheel-ring-inner" cx="260" cy="260" r="99" />
+                <circle class="wheel-hub" cx="260" cy="260" r="82" />
+                <text class="wheel-hub-glyph" x="260" y="278" text-anchor="middle" aria-hidden="true">食</text>
+              </svg>
+
+              <button class="center-spin" id="centerSpin" type="button" aria-label="开始转动转盘">
+                <span class="center-spin-icon" aria-hidden="true">↗</span>
+                <span>开转</span>
+              </button>
+            </div>
+
+            <div class="result-bubble" id="resultBubble" aria-live="polite">
+              <span class="result-bubble-label">命运选中</span>
+              <strong id="bubbleFood">今天吃什么？</strong>
+            </div>
+          </div>
+
+          <button class="spin-button" id="spinButton" type="button">
+            <span class="button-glow" aria-hidden="true"></span>
+            <span class="spin-button-main">
+              <span class="spin-button-glyph" aria-hidden="true">✦</span>
+              <span class="spin-button-copy">替我决定</span>
+            </span>
+            <span class="space-hint" aria-hidden="true">SPACE</span>
+          </button>
+          <p class="spin-hint">第一次是答案，第二次是嘴硬。转盘都懂。</p>
+        </section>
+      </section>
+
+      <section class="lower-grid">
+        <article class="result-card" id="resultCard" aria-labelledby="resultTitle">
+          <header class="section-head">
+            <div>
+              <p class="micro-label">TONIGHT'S PICK</p>
+              <h2 id="resultTitle">今晚吃什么？</h2>
+            </div>
+            <button class="text-button" id="againButton" type="button" hidden>再转一次 <span aria-hidden="true">↗</span></button>
+          </header>
+
+          <div class="result-empty" id="resultEmpty">
+            <span class="empty-orbit" aria-hidden="true">
+              <span>✦</span>
+            </span>
+            <div>
+              <h3>答案正在加载</h3>
+              <p>点一下转盘，今晚的快乐就有方向了。</p>
+            </div>
+          </div>
+
+          <div class="result-content" id="resultContent" aria-live="polite" hidden>
+            <div class="result-emoji-wrap">
+              <span class="result-emoji" id="resultEmoji" aria-hidden="true">🍜</span>
+              <span class="result-seal" aria-hidden="true">IT'S<br />THIS</span>
+            </div>
+            <div class="result-copy">
+              <p>就是它了。</p>
+              <h3 id="resultFood">番茄牛腩饭</h3>
+              <span class="result-caption" id="resultCaption">今晚不必再做选择，去吃吧。</span>
+            </div>
+            <span class="result-number" id="resultNumber">NO. 01</span>
+          </div>
+
+          <div class="history-block">
+            <div class="history-head">
+              <span>最近三次</span>
+              <span class="history-status">仅保存在本机</span>
+            </div>
+            <ol class="history-list" id="historyList">
+              <li class="history-empty">还没有记录，今晚让转盘先开个张。</li>
+            </ol>
+          </div>
+        </article>
+
+        <section class="menu-card" aria-labelledby="menuTitle">
+          <header class="section-head">
+            <div>
+              <p class="micro-label">MY DINNER LIST</p>
+              <h2 id="menuTitle">我的菜单 <span class="title-count" id="menuCount">8</span></h2>
+            </div>
+            <button class="add-button" id="openAddDialog" type="button">
+              <span aria-hidden="true">＋</span>
+              加点吃的
+            </button>
+          </header>
+
+          <div class="food-list" id="foodList" aria-live="polite"></div>
+
+          <footer class="menu-footer">
+            <p>最多放 16 个，选择太多也会让人饿。</p>
+            <button class="reset-button" id="resetFoods" type="button">恢复推荐菜单</button>
+          </footer>
+        </section>
+      </section>
+
+      <footer class="page-footer">
+        <span>今天也要好好吃饭</span>
+        <span class="footer-star" aria-hidden="true">✦</span>
+        <span>你的菜单只留在这台设备</span>
+      </footer>
+    </main>
+
+    <dialog class="food-dialog" id="foodDialog">
+      <form class="dialog-panel" id="addFoodForm">
+        <header class="dialog-head">
+          <div>
+            <p class="micro-label">ADD TO THE WHEEL</p>
+            <h2>加点今晚想吃的</h2>
+          </div>
+          <button class="dialog-close" id="closeAddDialog" type="button" aria-label="关闭">×</button>
+        </header>
+
+        <div class="quick-picks" aria-label="快速选择">
+          <button type="button" data-quick-food="火锅">🍲 火锅</button>
+          <button type="button" data-quick-food="拉面">🍜 拉面</button>
+          <button type="button" data-quick-food="寿司">🍣 寿司</button>
+          <button type="button" data-quick-food="炒饭">🍚 炒饭</button>
+        </div>
+
+        <label class="field-label" for="foodName">食物名字</label>
+        <div class="input-wrap">
+          <span class="input-emoji" id="selectedEmoji" aria-hidden="true">🍽️</span>
+          <input
+            class="food-input"
+            id="foodName"
+            name="foodName"
+            type="text"
+            maxlength="12"
+            autocomplete="off"
+            enterkeyhint="done"
+            placeholder="例如：番茄牛腩饭"
+            required
+          />
+        </div>
+        <p class="field-error" id="foodError" role="alert" hidden></p>
+
+        <fieldset class="emoji-fieldset">
+          <legend>给它配个表情</legend>
+          <div class="emoji-options" id="emojiOptions">
+            <button class="emoji-option is-selected" type="button" data-emoji="🍽️" aria-label="选择餐盘" aria-pressed="true">🍽️</button>
+            <button class="emoji-option" type="button" data-emoji="🍜" aria-label="选择面条" aria-pressed="false">🍜</button>
+            <button class="emoji-option" type="button" data-emoji="🍲" aria-label="选择火锅" aria-pressed="false">🍲</button>
+            <button class="emoji-option" type="button" data-emoji="🍣" aria-label="选择寿司" aria-pressed="false">🍣</button>
+            <button class="emoji-option" type="button" data-emoji="🍚" aria-label="选择米饭" aria-pressed="false">🍚</button>
+            <button class="emoji-option" type="button" data-emoji="🍕" aria-label="选择披萨" aria-pressed="false">🍕</button>
+            <button class="emoji-option" type="button" data-emoji="🥗" aria-label="选择沙拉" aria-pressed="false">🥗</button>
+            <button class="emoji-option" type="button" data-emoji="🍔" aria-label="选择汉堡" aria-pressed="false">🍔</button>
+            <button class="emoji-option" type="button" data-emoji="🍗" aria-label="选择炸鸡" aria-pressed="false">🍗</button>
+            <button class="emoji-option" type="button" data-emoji="🥟" aria-label="选择饺子" aria-pressed="false">🥟</button>
+          </div>
+        </fieldset>
+
+        <button class="dialog-submit" type="submit">
+          <span>加入转盘</span>
+          <span aria-hidden="true">↗</span>
+        </button>
+      </form>
+    </dialog>
+
+    <dialog class="install-dialog" id="installDialog">
+      <div class="install-panel">
+        <span class="install-phone" aria-hidden="true">▣</span>
+        <p class="micro-label">KEEP IT CLOSE</p>
+        <h2>把转盘放到桌面</h2>
+        <ol>
+          <li>用 Safari 打开这个页面</li>
+          <li>点底部的「分享」按钮</li>
+          <li>选择「添加到主屏幕」</li>
+        </ol>
+        <button class="dialog-submit" id="closeInstallDialog" type="button">知道了</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span id="toastMessage"></span>
+      <button id="undoDelete" type="button" hidden>撤回</button>
+    </div>
+
+    <canvas class="confetti-canvas" id="confettiCanvas" aria-hidden="true"></canvas>
+  </body>
+</html>

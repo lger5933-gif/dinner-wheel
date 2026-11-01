@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="70" y1="35" x2="445" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#242428"/>
+      <stop offset="1" stop-color="#111113"/>
+    </linearGradient>
+    <linearGradient id="lime" x1="148" y1="119" x2="372" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dcffad"/>
+      <stop offset="1" stop-color="#95db4c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(180 166) rotate(46) scale(342)">
+      <stop stop-color="#ffba72" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#ffba72" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000" flood-opacity=".34"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="114" fill="url(#glow)"/>
+  <circle cx="256" cy="266" r="166" fill="#f6c65f" stroke="#fff3c6" stroke-width="13" filter="url(#shadow)"/>
+  <path d="M256 100a166 166 0 0 1 143.77 83L256 266Z" fill="#b9ed7a"/>
+  <path d="M399.77 183A166 166 0 0 1 256 432V266Z" fill="#91cbf7"/>
+  <path d="M256 432a166 166 0 0 1-143.77-83L256 266Z" fill="#ff9a84"/>
+  <path d="M112.23 349A166 166 0 0 1 256 100v166Z" fill="#cab5ff"/>
+  <circle cx="256" cy="266" r="76" fill="url(#lime)" stroke="#f5ffe6" stroke-width="9"/>
+  <path d="M256 66l19 34h-38l19-34Z" fill="#f6c65f" stroke="#fff0b9" stroke-width="6"/>
+  <text x="256" y="293" text-anchor="middle" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="68" font-weight="800" fill="#18210f">食</text>
+</svg>
